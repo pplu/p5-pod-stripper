@@ -13,8 +13,15 @@ sub dostrip;
 use Cwd ();
 my $cwd = Cwd::cwd();
 
+my @dirs;
+if (@ARGV) {
+  @dirs = @ARGV;
+} else {
+  @dirs = ('local/');
+}
+
 # Traverse desired filesystems
-File::Find::find({wanted => \&wanted}, 'local/');
+File::Find::find({wanted => \&wanted}, @dirs);
 exit;
 
 sub wanted {
