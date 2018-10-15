@@ -9,6 +9,10 @@ use autodie;
 
 sub wanted;
 sub dostrip;
+sub delete_pod;
+
+my $original_bytes = 0;
+my $final_bytes = 0;
 
 use Cwd ();
 my $cwd = Cwd::cwd();
@@ -22,21 +26,37 @@ if (@ARGV) {
 
 # Traverse desired filesystems
 File::Find::find({wanted => \&wanted}, @dirs);
+
+say "Original module size: $original_bytes";
+say "Stripped to: $final_bytes";
+say sprintf "Won %0.02f%%", (1- ($final_bytes / $original_bytes)) * 100;
+
 exit;
 
 sub wanted {
-    my ($dev,$ino,$mode,$nlink,$uid,$gid);
+    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size);
 
-    (($dev,$ino,$mode,$nlink,$uid,$gid) = lstat($_)) &&
-    -f _ &&
-    /^.*\.pm\z/s &&
-    dostrip($_);
+    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size) = lstat($_);
+    $original_bytes += $size;
+
+    if (-f $_ && /^.*\.pm\z/s) {
+        dostrip($_);
+    }
+
+    if (-f _ && /^.*\.pod\z/s) {
+        delete_pod($_);
+    }
+
+    $final_bytes += (-s $_ // 0);
 }
 
+sub delete_pod {
+    my $file = shift;
+    unlink $file;
+}
 
 sub dostrip {
     my $file = shift;
-    say "Stripping $file";
 
     my $strip = Pod::Strip->new;
     my $module;
