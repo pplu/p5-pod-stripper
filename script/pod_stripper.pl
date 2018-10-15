@@ -17,8 +17,15 @@ my $final_bytes = 0;
 use Cwd ();
 my $cwd = Cwd::cwd();
 
+my @dirs;
+if (@ARGV) {
+  @dirs = @ARGV;
+} else {
+  @dirs = ('local/');
+}
+
 # Traverse desired filesystems
-File::Find::find({wanted => \&wanted}, 'local/');
+File::Find::find({wanted => \&wanted}, @dirs);
 
 say "Original module size: $original_bytes";
 say "Stripped to: $final_bytes";
