@@ -9,6 +9,7 @@ use autodie;
 
 sub wanted;
 sub dostrip;
+sub delete_pod;
 
 use Cwd ();
 my $cwd = Cwd::cwd();
@@ -24,8 +25,18 @@ sub wanted {
     -f _ &&
     /^.*\.pm\z/s &&
     dostrip($_);
+
+    (($dev,$ino,$mode,$nlink,$uid,$gid) = lstat($_)) &&
+    -f _ &&
+    /^.*\.pod\z/s &&
+    delete_pod($_);
+
 }
 
+sub delete_pod {
+    my $file = shift;
+    unlink $file;
+}
 
 sub dostrip {
     my $file = shift;
