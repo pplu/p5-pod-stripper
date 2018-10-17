@@ -9,13 +9,14 @@ Some initial tests show great earnings:
 mkdir podstrip_test
 cd podstrip_test
 cpanm --no-man-pages -n -l local Moose
-curl -s https://raw.githubusercontent.com/pplu/p5-pod-stripper/feature/fatpack/fatpacked/pod_stripper.pl | perl
+curl -s https://raw.githubusercontent.com/pplu/p5-pod-stripper/feature/fatpack/fatpacked/pod_stripper.pl | perl - local
 > Original module size: 3029692
 > Stripped to: 2041114
 > Won 32.63%
 
 rm -rf local
 cpanm --no-man-pages -n -l local Paws
+curl -s https://raw.githubusercontent.com/pplu/p5-pod-stripper/feature/fatpack/fatpacked/pod_stripper.pl | perl - local
 Original module size: 63479951
 Stripped to: 28912215
 Won 54.45%
